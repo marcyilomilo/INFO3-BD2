@@ -1,0 +1,65 @@
+1) SELECT COUNT(*) AS total_pontos
+FROM pontos_historicos;
+
+SELECT COUNT(*) AS total_enderecos
+FROM endereco;
+
+
+2) SELECT pontos_historicos.descricao,
+       endereco.rua,
+       grupo_cultural.nome
+FROM pontos_historicos
+JOIN endereco
+ON pontos_historicos.endereco_id = endereco.id
+JOIN localiza
+ON pontos_historicos.id = localiza.ponto_id
+JOIN grupo_cultural
+ON localiza.grupo_id = grupo_cultural.id;
+
+
+3) CREATE VIEW vw_grupos AS
+SELECT nome,
+       descricao,
+       contato
+FROM grupo_cultural;
+
+
+4) DELIMITER //
+
+CREATE PROCEDURE listarGrupos()
+BEGIN
+    SELECT * FROM grupo_cultural;
+END //
+
+DELIMITER ;
+
+
+
+5) DELIMITER //
+
+CREATE FUNCTION quantidadeGrupos()
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE total INT;
+
+    SELECT COUNT(*)
+    INTO total
+    FROM grupo_cultural;
+
+    RETURN total;
+END //
+
+DELIMITER ;
+
+
+
+6) CREATE TRIGGER verificar_contato
+BEFORE INSERT
+ON grupo_cultural
+FOR EACH ROW
+BEGIN
+    IF NEW.contato = '' THEN
+        SET NEW.contato = 'Não informado';
+    END IF;
+END;
